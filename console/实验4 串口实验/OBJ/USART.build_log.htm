@@ -1,0 +1,59 @@
+<html>
+<body>
+<pre>
+<h1>礦ision Build Log</h1>
+<h2>Tool Versions:</h2>
+IDE-Version: μVision V5.14.0.0
+Copyright (C) 2015 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: sfd 12252, 2311, LIC=MGX63-A0K4U-334M1-C5VGK-3MT3B-8D9E2
+ 
+Tool Versions:
+Toolchain:       MDK-ARM Professional  Version: 5.14.0.0
+Toolchain Path:  D:\work\MDK5\ARM\ARMCC\Bin
+C Compiler:      Armcc.exe V5.05 update 1 (build 106)
+Assembler:       Armasm.exe V5.05 update 1 (build 106)
+Linker/Locator:  ArmLink.exe V5.05 update 1 (build 106)
+Library Manager: ArmAr.exe V5.05 update 1 (build 106)
+Hex Converter:   FromElf.exe V5.05 update 1 (build 106)
+CPU DLL:         SARMCM3.DLL V5.14.0.0
+Dialog DLL:      DCM.DLL V1.13.1.0
+Target DLL:      STLink\ST-LINKIII-KEIL_SWO.dll V2.0.14.0_KEIL
+Dialog DLL:      TCM.DLL V1.14.4.0
+ 
+<h2>Project:</h2>
+E:\study\console\实验4 串口实验\USER\USART.uvprojx
+Project File Date:  12/24/2017
+
+<h2>Output:</h2>
+Build target 'USART'
+compiling console_usart.c...
+console_usart.c(299): warning:  #550-D: variable "ret" was set but never used
+      unsigned int ret;//返回值    
+console_usart.c(411): warning:  #188-D: enumerated type mixed with another type
+                stConsoleDev.sysCmd=(unsigned char)i;//保存系统命令id
+console_usart.c(450): warning:  #188-D: enumerated type mixed with another type
+                      stConsoleDev.sysCmd=(unsigned char)i;//保存系统命令id
+console_usart.c(495): warning:  #111-D: statement is unreachable
+                           break;       
+console_usart.c(79): warning:  #177-D: function "consoleMemCopy" was declared but never referenced
+  static  void consoleMemCopy(unsigned char *pDest, unsigned char *pScr, unsigned short size)
+console_usart.c(90): warning:  #177-D: function "consoleMemSet" was declared but never referenced
+  static void consoleMemSet(unsigned char *pDest, unsigned char value, unsigned short size)
+console_usart.c(125): warning:  #177-D: function "consoleGetSysCmdName" was declared but never referenced
+  static unsigned char consoleGetSysCmdName(unsigned char *src,unsigned char*cmdName,unsigned char 
+console_usart.c(235): warning:  #177-D: function "consoleSysCmdExe" was declared but never referenced
+  static void consoleSysCmdExe(void)
+console_usart.c: 8 warnings, 0 errors
+linking...
+Program Size: Code=4816 RO-data=472 RW-data=64 ZI-data=2008  
+FromELF: creating hex file...
+"..\OBJ\USART.axf" - 0 Error(s), 8 Warning(s).
+
+<h2>Collection of Component include folders:</h2>
+  E:\study\console\实验4 串口实验\USER\RTE
+  D:\work\MDK5\ARM\PACK\Keil\STM32F4xx_DFP\1.0.8\Device\Include
+
+<h2>Collection of Component Files used:</h2>
+</pre>
+</body>
+</html>
