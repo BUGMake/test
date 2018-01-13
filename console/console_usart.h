@@ -97,6 +97,15 @@ extern QueueStruct stconsoleQueue;
 extern CONSOLE_USART_STRUCT stConsoleDev;//终端设备管理器
 
 
+
+
+
+
+//////////////////////////////
+
+//add
+//////////////////////
+
 #endif /*CONSOLE_USART_*/
 
 
