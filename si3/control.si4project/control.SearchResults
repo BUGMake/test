@@ -1,0 +1,5 @@
+---- S1_pro.diceTimesBack Matches (4 in 2 files) ----
+control_dice_pro in pro.c (PRO) :         if(S1_pro.st_hardWare.keyGetFlag==1&&S1_pro.diceTimes!=S1_pro.diceTimesBack)//按键按下
+control_dice_pro in pro.c (PRO) : 			if(S1_pro.diceTimes==S1_pro.diceTimesBack)//第一次打色		
+control_dice_pro in pro.c (PRO) : 				  S1_pro.diceTimesBack=0;//清除
+{anonS1_PRO_STRUCT} in pro.h (PRO) :  u8 diceTimesBack;//打色次数

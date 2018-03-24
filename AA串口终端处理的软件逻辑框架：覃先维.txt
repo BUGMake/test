@@ -1,0 +1,35 @@
+
+代码：《x2_Transponder（代码by覃先维）》、《LiteCtrl-master（X2）_覃先维》
+
+
+好好研究这份代码的架构：硬件初始化留出来的数据交换接口、软件初始化的循环buffer、数据读写接口和处理接口（这里才是关键和核心）
+主要逻辑 = 底层获取到的数据先写到循环buffer里面、主循环在循环buffer里面一次读取n个字节出来、逐个字节处理、解析成数据包最后处理
+硬件 = 串口、CC110x、sim、key、flash、adc、i2c、等...
+
+
+Console文件夹：终端命令的注册、添加、处理
+
+Libs文件夹：数据处理（循环buffer、单字节处理）
+
+
+原理/逻辑：
+
+1、串口硬件初始化（中断接收和发送）：ComUSART文件夹
+int usart2_read(char *src,int data_len)
+int usart2_write(char *src,int data_len)
+
+2、软件初始化：
+init_console();
+register_console_write((int (*)(char *,int))usart1_write);//注册发送函数
+register_cmds();//注册命令和回调处理，在这里添加自定义命令，如reboot
+
+3、while(1)添加串口终端入口处理：
+console_entery();//从buffer里面读取64字节数据出来，逐个传给console_proc();函数处理
+参考 = sim_entry();//数据处理，好好研究一下sim.c文件
+
+
+研究数据输入输出接口的设计和接口的封装：
+
+底层（中断/扫描）不断地读取数据放到循环buffer里面-->
+主循环不断地从循环buffer里面读一定长度的数据、然后单个字节处理、解析成完整的数据包-->
+数据包处理函数

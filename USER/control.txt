@@ -1,0 +1,155 @@
+R东:ff aa 0 2 2 3 3 ec 8c 
+crc error--
+R东:ff aa 0 2 2 4 4 af 7e 
+crc error--
+R东:ff aa 0 2 2 5 5 6f 2e 
+crc error--
+R东:ff aa 0 2 2 6 6 2f df 
+crc error--
+R东:ff aa 0 2 2 7 7 ef 8f 
+crc error--
+R东:ff aa 0 2 2 8 8 aa 7b 
+crc error--
+R东:ff aa 0 2 2 9 9 6a 2b
+
+1.
+ff aa 0 0 1 10 50 c 
+ff aa 1 0 1 10 ac d 
+ff aa 2 0 1 10 e8 d 
+ff aa 3 0 1 10 14 c 
+
+2.
+data[7]:4d data[6]:9d
+ff aa 0 0 1 3 9d 4d 
+wCrc:614c 
+data[7]:4c data[6]:61
+ff aa 1 0 1 3 61 4c 
+wCrc:254c 
+data[7]:4c data[6]:25
+ff aa 2 0 1 3 25 4c 
+wCrc:d94d 
+data[7]:4d data[6]:d9
+ff aa 3 0 1 3 d9 4d 
+PRO_CARD_NUM_TO_A83T
+
+
+wCrc:acac 
+data[7]:ac data[6]:3
+ff aa 0 2 2 0 3 ac ac 
+wCrc:6c6d 
+data[7]:6c data[6]:3
+ff aa 0 2 2 1 3 6c 6d 
+wCrc:6d2d 
+data[7]:6d data[6]:3
+ff aa 0 2 2 2 3 6d 2d 
+wCrc:adec 
+data[7]:ad data[6]:3
+ff aa 0 2 2 3 3 ad ec 
+
+
+1.无线充电
+2.按键这个是哪个功能 KEY_Scan()
+3.温度采集 5s 
+ 判断是否正常和不正常
+4.开机充电3分钟是什么意思if(playtimes == 180*1000)//
+5.检测马达
+  判断是否打色普通和控制
+  1）温度 2)充电时间 3)按键 4)是否连续的两次打色
+6.获取按键值（一直都在读取）
+7.获取洗牌结束标志//1s 洗牌灯一直亮多久
+
+
+enum CMD
+{
+    CMD_CARD_NUMBER = 0,   // 牌数量
+    CMD_CARD_NUMBER_REQUEST = 1, //牌数量请求
+    CMD_CARD_SEND = 2,           // 牌单个数据的发送
+    CMD_CARD_SEND_REQUEST = 3,   //发牌请求
+    CMD_CARD_DATA = 4,           //保存S1发过来的牌
+    CMD_CARD_DATA_REQUEST = 5,  //向S1请求一个方位的牌
+    CMD_DICE_RESULT = 6,         // 骰盘结果
+    CMD_DICE_RESULT_REQUEST = 7, // 骰盘结果请求 暂时不用
+    CMD_SHUFFLE_CARD_END                = 8, //洗牌结束；(洗牌结束开始出打骰结果  打骰成功清除牌的数据)
+    CMD_PLAY_DICE                  = 9, // 传庄家方位 并返回会打骰结果 （如果第一次没有将打骰结果的给S1的情况才会使用 如同 骰盘结果请求）
+    CMD_CLEAR_PLAY_DICE             = 10,//清除打骰
+    CMD_CAER_DATA_TO_S1            = 11,// 整个方位的发送给S1;
+    CMD_OPEN_CAMERA             = 12, // 开灯
+    CMD_CLOSE_CAMERA            = 13, // 关灯
+};
+
+
+/*点数命令:11 ~ 66*/ //骰子A：低4位；骰子B：高4位
+//通信协议：0xff 0xaa 0x00 0x06 0x01 [数字] [校验码低8位] [校验码高8位]		
+//FF AA  0  6  4  0  2 41 66 25 1F 
+//if(pData[5]>=0 && pData[5]<=3 && pData[6]>=1 && pData[6]<=3)//方位+次数+点数
+/*
+包头			方位	CMD		长度	数据	结尾
+0xff 0xaa		0-4		0-7		len		data	CRC16
+
+方位0-4：东南西北S1
+CMD 0-7：
+0=该方位的牌的数量；			A83T-->S1
+1=请求重发牌的数量；			S1-->A83T
+2=发单个牌；					A83T-->S1
+3=请求重新发单个牌；			S1-->A83T
+4=整个方位的牌的数据；			S1-->A83T（东）
+5=请求重发整个方位的牌的数据；	A83T-->S1
+6=点数；						A83T-->S1
+7=请求重发点数；				S1-->A83T
+*/
+#define CMD_CARD_NUM 						0
+#define CMD_RESEND_CARD_NUM 		1
+#define CMD_SINGLE_CARD 				2
+#define CMD_RESEND_SINGLE_CARD 	3
+#define CMD_ALL_DIR_CARD 				4
+#define CMD_RESEND_ALL_DIR_CARD 5
+#define CMD_DICE_NUM 						6
+#define CMD_RESEND_DICE_NUM 		7
+#define CMD_XIPAIJIESHU 				8
+#define CMD_SEND_BP 						9
+#define CMD_DASEJIESHU 				  10
+data（ID VALUE）
+//A83T通信协议：0xff 0xaa 方位 cmd len data [校验码低8位] [校验码高8位]
+                  0    1   2    3    4   5      6              7
+//判断接收到的数据：TxBuf[1] = 1~6; //6个按键
+all_uart_entry(get_cc110x_module,touzi_recv[0],touzi_recv[1],touzi_recv[2],touzi_recv[3],0,0);//touzi_recv[4][4] = {0};//点数（4个方位）= 方位+次数+点数
+//发送打色结束命令						
+all_uart_entry(get_cc110x_module,touzi_recv[0],touzi_recv[1],touzi_recv[2],touzi_recv[3],0,1);//touzi_recv[4][4] = {0};//点数（4个方位）= 方位+次数+点数	
+//发送洗牌结束信号						
+all_uart_entry(get_cc110x_module,touzi_recv[0],touzi_recv[1],touzi_recv[2],touzi_recv[3],cardFinshedFlag,0);//touzi_recv[4][4] = {0};//点数（4个方位）= 方位+次数+点数
+
+
+all_uart_entry--》handle_data_uart--》Pctl_handlePro--》
+
+
+两个方向 
+A83T-->S1 Pctl_handlePro
+S1-->A83T s1_to_a83t
+
+0=该方位的牌的数量；			A83T-->S1
+开始是发送每个方位的牌数量
+1=请求重发牌的数量；			S1-->A83T
+2=发单个牌；					A83T-->S1
+发送的是一个牌
+3=请求重新发单个牌；			S1-->A83T
+4=整个方位的牌的数据；			S1-->A83T（东）
+5=请求重发整个方位的牌的数据；	A83T-->S1
+
+6=点数；						A83T-->S1
+7=请求重发点数；				S1-->A83T
+
+
+
+1.发送牌数 正常44，如果少于44
+2.正常牌44.
+  如果不等于少于44，重发
+3.不正常牌数
+  
+FINISH_FLAG--》
+
+1.检测接收到所有的牌后并且已经发送给A83T了
+
+				
+2046
+4096/x=3.33/1.66-->
+
